@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたの企画に合うサービス診断 | キュリア</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16233F;
+    --paper:#EFF1EC;
+    --panel:#FAFAF7;
+    --teal:#1F6F72;
+    --teal-tint:#E4EEEE;
+    --coral:#D65F3C;
+    --line:#D8DAD3;
+    --muted:#5B6660;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,.headline{
+    font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;
+    font-weight:700;
+    margin:0;
+    color:var(--ink);
+  }
+  .wrap{
+    max-width:560px;
+    margin:0 auto;
+    padding:48px 20px 80px;
+  }
+  .brand{
+    font-size:13px;
+    letter-spacing:.02em;
+    color:var(--muted);
+    margin-bottom:28px;
+  }
+  .intro h1{
+    font-size:26px;
+    line-height:1.5;
+    margin-bottom:14px;
+  }
+  .intro p{
+    color:var(--muted);
+    font-size:15px;
+    margin-bottom:32px;
+  }
+  .start-btn{
+    display:inline-block;
+    background:var(--coral);
+    color:#fff;
+    border:none;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:500;
+    padding:14px 28px;
+    border-radius:2px;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .start-btn:hover{opacity:.9;}
+
+  .progress{
+    display:flex;
+    gap:6px;
+    margin-bottom:8px;
+  }
+  .progress .tick{
+    flex:1;
+    height:3px;
+    background:var(--line);
+  }
+  .progress .tick.done{background:var(--teal);}
+  .progress-label{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:32px;
+  }
+
+  .question h2{
+    font-size:20px;
+    line-height:1.6;
+    margin-bottom:24px;
+  }
+  .options{
+    list-style:none;
+    margin:0 0 24px;
+    padding:0;
+    border-top:1px solid var(--line);
+  }
+  .options li{
+    border-bottom:1px solid var(--line);
+  }
+  .options button{
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+    padding:18px 4px;
+    cursor:pointer;
+  }
+  .options button:hover{
+    background:var(--teal-tint);
+  }
+  .back-link{
+    background:none;
+    border:none;
+    font-family:inherit;
+    font-size:13px;
+    color:var(--muted);
+    cursor:pointer;
+    padding:0;
+    text-decoration:underline;
+  }
+
+  .result-tag{
+    font-size:13px;
+    color:var(--teal);
+    margin-bottom:10px;
+  }
+  .result h1{
+    font-size:24px;
+    margin-bottom:16px;
+  }
+  .result p.desc{
+    font-size:15px;
+    color:var(--ink);
+    margin-bottom:28px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:24px;
+    margin-bottom:28px;
+  }
+  .cta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .cta{
+    display:inline-block;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:500;
+    padding:14px 24px;
+    border-radius:2px;
+    text-decoration:none;
+  }
+  .cta.primary{
+    background:var(--coral);
+    color:#fff;
+  }
+  .cta.secondary{
+    background:none;
+    color:var(--teal);
+    border:1px solid var(--teal);
+  }
+  .retry{
+    font-size:13px;
+    color:var(--muted);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    text-decoration:underline;
+    font-family:inherit;
+  }
+
+  .hidden{display:none;}
+
+  @media (max-width:480px){
+    .wrap{padding:32px 16px 64px;}
+    .cta-row{flex-direction:column;}
+    .cta{text-align:center;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">キュリア(QLEAR)</div>
+
+  <!-- 導入画面 -->
+  <div id="screen-intro" class="intro">
+    <h1>あなたの企画に合うサービス診断</h1>
+    <p>6つの質問に答えると、今回の企画に合うキュリアのサービスがわかります。所要時間は1分程度です。</p>
+    <button class="start-btn" onclick="startQuiz()">診断をはじめる</button>
+  </div>
+
+  <!-- 設問画面 -->
+  <div id="screen-question" class="hidden">
+    <div class="progress" id="progress"></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div class="question">
+      <h2 id="question-text"></h2>
+      <ul class="options" id="options-list"></ul>
+    </div>
+    <button class="back-link" id="back-btn" onclick="goBack()">ひとつ前の質問に戻る</button>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="screen-result" class="hidden result">
+    <div class="result-tag">診断結果</div>
+    <h1 id="result-title"></h1>
+    <div class="panel">
+      <p class="desc" id="result-desc" style="margin-bottom:0;"></p>
+    </div>
+    <div class="cta-row">
+      <a class="cta primary" id="result-doc-link" href="https://qlear.net/documents/" target="_blank" rel="noopener">資料をもらう</a>
+      <a class="cta secondary" id="result-detail-link" href="#" target="_blank" rel="noopener">機能の詳細を見る</a>
+    </div>
+    <button class="retry" onclick="startQuiz()">もう一度診断する</button>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   ログ送信先(GASウェブアプリのURL)
+   =================================================================== */
+const LOG_ENDPOINT = "https://script.google.com/a/macros/miliad.co.jp/s/AKfycbwfjRFjnUQvtLtEmA_GE43E0_7_hgqTfnB62dErPKi4BSN5dYPhFJYenqJr_oxxQ5TjFQ/exec";
+
+/* ===================================================================
+   質問データ
+   各選択肢の scores は、8つのサービス区分への加点。
+   合計加点が最も高い区分を診断結果として表示する。
+   区分キー: form / photoFrame / stampRally / lottery / coupon / lp / extLink / trelead
+   =================================================================== */
+const QUESTIONS = [
+  {
+    text: "今回の企画で一番かなえたいことは",
+    options: [
+      { label: "来場者やお客様の声・好みを知りたい", scores: { form: 3, trelead: 1 } },
+      { label: "何度も参加してもらい、回遊してほしい", scores: { stampRally: 3 } },
+      { label: "当選のワクワク感で参加率や拡散を狙いたい", scores: { lottery: 3, photoFrame: 1 } },
+      { label: "購入や来店の後押しになる特典を渡したい", scores: { coupon: 3 } },
+      { label: "自社のECサイトや予約ページへ送客したい", scores: { extLink: 3 } },
+      { label: "「なぜ選ばれたのか」まで深く知りたい", scores: { trelead: 3 } }
+    ]
+  },
+  {
+    text: "実施する場所や手段は",
+    options: [
+      { label: "店舗やイベント会場など、その場で完結させたい", scores: { coupon: 1, lottery: 1, stampRally: 1 } },
+      { label: "チラシやDMにQRコードを載せて呼び込みたい", scores: { lp: 2, extLink: 1 } },
+      { label: "SNSでの拡散や話題化を狙いたい", scores: { photoFrame: 2, trelead: 1 } },
+      { label: "展示会など、複数のブースを回ってもらいたい", scores: { stampRally: 2 } }
+    ]
+  },
+  {
+    text: "参加者にどんな体験をしてほしいか",
+    options: [
+      { label: "1タップで気軽に終わる体験", scores: { lottery: 1, coupon: 1 } },
+      { label: "いくつかの場所を巡る達成感", scores: { stampRally: 2 } },
+      { label: "自分に合うものが見つかる面白さ", scores: { trelead: 2, form: 1 } },
+      { label: "記念に残る、シェアしたくなる仕上がり", scores: { photoFrame: 3 } }
+    ]
+  },
+  {
+    text: "集めたいデータは",
+    options: [
+      { label: "参加者数や当選数などの基本的なログ", scores: { lottery: 1, coupon: 1 } },
+      { label: "回答内容そのもの(アンケート結果)", scores: { form: 3 } },
+      { label: "購入や来店に至った理由・感情まで", scores: { trelead: 3 } },
+      { label: "今はまだ、告知ページがあれば十分", scores: { lp: 2 } }
+    ]
+  },
+  {
+    text: "すでに用意しているものは",
+    options: [
+      { label: "特にない、ゼロから相談したい", scores: { lp: 1 } },
+      { label: "送客したい自社サイトやECサイトがある", scores: { extLink: 3 } },
+      { label: "景品や特典はすでに用意している", scores: { coupon: 1, lottery: 1 } },
+      { label: "撮影スポットや記念写真の企画を考えている", scores: { photoFrame: 3 } }
+    ]
+  },
+  {
+    text: "景品や特典の見せ方は",
+    options: [
+      { label: "等数を分けて当選演出をしたい", scores: { lottery: 3 } },
+      { label: "参加者全員に配りたい", scores: { coupon: 2 } },
+      { label: "景品は不要、情報提供や送客がメイン", scores: { lp: 1, extLink: 1 } },
+      { label: "診断結果に応じた特典を用意したい", scores: { trelead: 2 } }
+    ]
+  }
+];
+
+/* 診断結果として表示する内容 */
+const RESULTS = {
+  form: {
+    title: "フォーム",
+    desc: "参加者の声を集めながら、投票や抽選と組み合わせて盛り上げられます。回答はログとして自動で集計されるため、紙のアンケートで発生していた集計の手間がなくなります。",
+    url: "https://qlear.net/features/form/"
+  },
+  photoFrame: {
+    title: "フォトフレーム",
+    desc: "オリジナルの記念フレームで、その場ならではの撮影体験を作れます。抽選やフォームと組み合わせて景品として提供する使い方が多く、SNS投稿を通じて自然に広がります。",
+    url: "https://qlear.net/features/photo-frame/"
+  },
+  stampRally: {
+    title: "スタンプラリー",
+    desc: "複数の場所やコンテンツを回遊してもらう企画に向いています。GPSやキーワード形式のラリーにも対応しており、イベント全体の回遊率を底上げできます。",
+    url: "https://qlear.net/features/stamp-rally/"
+  },
+  lottery: {
+    title: "抽選",
+    desc: "1等から10等まで細かく等数を設定でき、1日1回など繰り返し参加の設計もできます。当選のワクワク感で参加率と口コミの広がりを狙う企画に向いています。",
+    url: "https://qlear.net/features/prize-draw/"
+  },
+  coupon: {
+    title: "クーポン",
+    desc: "来店や購入につながる特典をその場で配布できます。もぎり機能で使用状況も把握できるため、配って終わりにせず効果を数字で確認できます。",
+    url: "https://qlear.net/features/coupon/"
+  },
+  lp: {
+    title: "LP(特設ページ)",
+    desc: "キャンペーンの内容や参加方法を1つのページにまとめて伝えられます。AIを使って制作するため、通常の外注より短い時間で仕上げられます。",
+    url: "https://qlear.net/features/landing-page/"
+  },
+  extLink: {
+    title: "外部リンク",
+    desc: "紙やQRコードから、すでにお持ちのECサイトや予約ページへそのまま送客したい場合に向いています。新たにコンテンツを作らず、導線だけをシンプルに用意できます。",
+    url: "https://qlear.net/features/ext-link/"
+  },
+  trelead: {
+    title: "トレリド(AIコンシェルジュ/診断ツール)",
+    desc: "参加率や当選数だけでなく、「なぜ選ばれたのか」という購買理由や感情までデータとして可視化したい場合に向いています。診断・ガチャ・アンケートを一体で設計する、キュリア発の専用ツールです。",
+    url: "https://qlear.net/trelead"
+  }
+};
+
+let currentQuestion = 0;
+let answers = []; // 各質問で選んだ scores を履歴として保持(戻るボタン用)
+
+function el(id){ return document.getElementById(id); }
+
+function startQuiz(){
+  currentQuestion = 0;
+  answers = [];
+  el("screen-intro").classList.add("hidden");
+  el("screen-result").classList.add("hidden");
+  el("screen-question").classList.remove("hidden");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[currentQuestion];
+
+  // 進捗表示
+  const progress = el("progress");
+  progress.innerHTML = "";
+  QUESTIONS.forEach((_, i) => {
+    const tick = document.createElement("div");
+    tick.className = "tick" + (i <= currentQuestion ? " done" : "");
+    progress.appendChild(tick);
+  });
+  el("progress-label").textContent = "設問 " + (currentQuestion + 1) + " / " + QUESTIONS.length;
+
+  el("question-text").textContent = q.text;
+
+  const list = el("options-list");
+  list.innerHTML = "";
+  q.options.forEach((opt) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.textContent = opt.label;
+    btn.onclick = () => selectOption(opt);
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+
+  el("back-btn").style.visibility = currentQuestion === 0 ? "hidden" : "visible";
+}
+
+function selectOption(opt){
+  answers[currentQuestion] = opt.scores;
+  if (currentQuestion < QUESTIONS.length - 1){
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function goBack(){
+  if (currentQuestion === 0) return;
+  currentQuestion--;
+  renderQuestion();
+}
+
+function showResult(){
+  const totals = {};
+  answers.forEach((scores) => {
+    Object.keys(scores).forEach((key) => {
+      totals[key] = (totals[key] || 0) + scores[key];
+    });
+  });
+
+  let best = null;
+  let bestScore = -1;
+  Object.keys(totals).forEach((key) => {
+    if (totals[key] > bestScore){
+      bestScore = totals[key];
+      best = key;
+    }
+  });
+
+  const result = RESULTS[best];
+
+  el("screen-question").classList.add("hidden");
+  el("screen-result").classList.remove("hidden");
+  el("result-title").textContent = result.title;
+  el("result-desc").textContent = result.desc;
+  el("result-detail-link").href = result.url;
+
+  // 診断結果をスプレッドシートに送信(お試し版のため、取れるデータのみ送信)
+  sendResultLog(best);
+}
+
+function sendResultLog(resultType){
+  try {
+    fetch(LOG_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        resultType: resultType,
+        source: document.referrer || ""
+      })
+    });
+  } catch (err) {
+    // 送信に失敗しても診断結果の表示自体は止めない
+    console.error("診断ログの送信に失敗しました", err);
+  }
+}
+</script>
+</body>
+</html>
