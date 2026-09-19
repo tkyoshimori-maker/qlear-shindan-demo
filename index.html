@@ -343,12 +343,14 @@ const RESULTS = {
 
 let currentQuestion = 0;
 let answers = []; // 各質問で選んだ scores を履歴として保持(戻るボタン用)
+let answerLabels = []; // 各質問で選んだ選択肢のラベルを履歴として保持(ログ送信用)
 
 function el(id){ return document.getElementById(id); }
 
 function startQuiz(){
   currentQuestion = 0;
   answers = [];
+  answerLabels = [];
   el("screen-intro").classList.add("hidden");
   el("screen-result").classList.add("hidden");
   el("screen-question").classList.remove("hidden");
@@ -386,6 +388,7 @@ function renderQuestion(){
 
 function selectOption(opt){
   answers[currentQuestion] = opt.scores;
+  answerLabels[currentQuestion] = opt.label;
   if (currentQuestion < QUESTIONS.length - 1){
     currentQuestion++;
     renderQuestion();
@@ -437,7 +440,8 @@ function sendResultLog(resultType){
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({
         resultType: resultType,
-        source: document.referrer || ""
+        source: document.referrer || "",
+        answers: answerLabels
       })
     });
   } catch (err) {
